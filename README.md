@@ -1,6 +1,18 @@
 
 # Prism - H.264 decoder in pure javascript 
 
+## 20180607
+这个是同济的一个牛逼同学16年的设计，看起来是手工将解码器js化了。
+实际测试，能解码，VGA单帧在40ms左右，但是很奇怪视频输出不连贯，我尝试用requestAnimationFrame包装了渲染部分，依然如此。
+
+这个我很喜欢，我以前也尝试手工将 ARUCO的js代码C语言化，对于用心的设计很尊重。
+
+可以配合 h264-live-player 的后端做测试
+
+尚未联系到该同学，暂时搁置。
+
+
+
 <img align="" height="200" src="http://cdn.cloudwarehub.com/42.pic_hd.jpg"> 
 
 Logo by **Jiangnan Zhuang**
