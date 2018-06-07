@@ -29,7 +29,8 @@ define(function() {
             for (var i = 0; i < needBytes; i++) {
                 if (bytepos + i >= this.buf.byteLength)
                     console.log(bytepos + i);
-                bytes[i] = this.dv.getUint8(bytepos + i);
+                else
+                    bytes[i] = this.dv.getUint8(bytepos + i);
             }
 
             /* cut first byte */

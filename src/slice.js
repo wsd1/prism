@@ -448,7 +448,7 @@ define([
                         for (var i = 0; i < this.mb_skip_run; i++) {
                             var mb = this.decoder.mbs[CurrMbAddr];
                             if (!mb) {
-                                console.log(CurrMbAddr);
+                                console.log('!mb,CurrMbAddr:' + CurrMbAddr);
                             }
                             this.decoder.currMb = mb;
                             mb.slice = this;

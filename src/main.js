@@ -1,3 +1,13 @@
+function ts(inf){}
+function tss(inf) {
+    inf = inf || '';
+    if (window.__last_timestamp__) {
+        var ms = Date.now() - window.__last_timestamp__;
+        console.log(ms + 'ms:' + inf);
+    }
+    window.__last_timestamp__ = Date.now();
+}
+
 /**
  * Created by gd on 16/5/8.
  */
@@ -14,6 +24,8 @@ define([
 ], function(_nal, _ringbuffer, _sps, _pps, _slice, _defs, _macroblock_layer, _dpb, _util) {
     var can = document.createElement('canvas');
     document.body.appendChild(can);
+
+
 
     function Decoder() {
         this.buffer = _ringbuffer.create(1024 * 1024 * 2); // 2M buffer
@@ -61,29 +73,41 @@ define([
                 buf: nal_buf,
                 decoder: this
             });
+            
+            ts('0.');
             nal.parse();
+            ts('1.nal.parse()');
+            //console.log('Valid NALU' + buf.byteLength + 'bytes, type:' + nal.nal_unit_type);
+
             switch (nal.nal_unit_type) {
                 case _defs.NAL_SPS: /* sps */
                     var sps = _sps.create(nal.rbsp);
                     sps.parse();
                     this.spses[sps.seq_parameter_set_id] = sps;
+                    console.log('SPS!');
                     break;
                 case _defs.NAL_PPS: /* pps */
                     var pps = _pps.create(nal.rbsp);
                     pps.parse();
                     this.ppses[pps.pic_parameter_set_id] = pps;
+                    console.log('PPS!');
                     break;
                 case _defs.NAL_SLICE: /* Coded slice of an IDR picture */
                 case _defs.NAL_SLICE_IDR:
                     var slice = _slice.create(nal.rbsp, this);
                     slice.nal = nal;
                     slice.parse();
+                    //console.log('FRAME!');
                     if (this.currMb === this.mbs[this.picSizeInMb - 1]) { /* end of pic */
                         this.filterPic();
+                        ts('2.nal.filterPic()');
                         var poc = {};
                         var picOrderCnt = slice.decodePOC(poc);
+                        ts('3.slice.decodePOC()');
                         this.dpb.markDecRefPic(slice, nal.nal_unit_type === _defs.NAL_SLICE_IDR ? true : false, slice.frame_num, picOrderCnt);
-                        _util.yuv2rgb(this.SL, this.SCb, this.SCr, this.width, this.height, can);
+                        ts('4.dpb.markDecRefPic()');
+                        _util.renderReady(this.SL, this.SCb, this.SCr, this.width, this.height, can);
+                        ts('5._util.yuv2rgb()');
                     }
                     break;
                 default:

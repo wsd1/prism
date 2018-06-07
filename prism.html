@@ -1,0 +1,56 @@
+<html>
+
+<head>
+  <title>h264-live-player web client demo</title>
+</head>
+
+<body>
+
+  <button type="button" onclick="wsavc.playStream()">Start Video</button>
+  <button type="button" onclick="wsavc.stopStream()">Stop Video</button>
+  <button type="button" onclick="wsavc.disconnect()">Disconnect</button>
+  <br/>
+
+  <!-- provide WSAvcPlayer -->
+  <script type="text/javascript" src="build/prism.min.js"></script>
+  <script type="text/javascript">
+
+    var uri = 'ws://' + document.location.hostname + ":8000";
+    var decoder = prism.create(); 
+    var socket = new WebSocket(uri);
+
+    // 打开Socket 
+    socket.onopen = function (event) {
+
+      // 发送一个开始指令
+      socket.send('REQUESTSTREAM');
+
+      // 监听消息
+      socket.onmessage = function (evt) {
+
+        if (typeof evt.data == "string")
+          return ;
+
+        var arrayBuffer;
+        var fileReader = new FileReader();
+        fileReader.onload = function () {
+          arrayBuffer = this.result;
+          decoder.decodeNal(arrayBuffer);
+        };
+        fileReader.readAsArrayBuffer(evt.data);
+
+        
+      };
+
+      // 监听Socket的关闭
+      socket.onclose = function (event) {
+        console.log('Client notified socket has closed', event);
+      };
+
+      // 关闭Socket.... 
+      //socket.close() 
+    };
+  </script>
+</body>
+
+</html>

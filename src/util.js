@@ -83,6 +83,25 @@ define(function() {
         context.putImageData(output, 0, 0);
     }
 
+    var frames = [];
+    function renderReady(y, u, v, width, height, canvas){
+        frames.push({ y: y, u: u, v: v, width: width, height: height, canvas: canvas});
+        requestAnimationFrame(render);
+    }
+
+
+    function render() {
+        if (frames.length > 0) { 
+            var frame = frames.shift();
+            yuv2rgb(frame.y, frame.u, frame.v, frame.width, frame.height, frame.canvas);
+        }
+        if (frames.length > 0) {
+            requestAnimationFrame(render);
+        }
+        console.log('requestAnimationFrame');
+    }
+
+
     function yuv2rgb(y, u, v, width, height, canvas) {
         canvas.width = width;
         canvas.height = height;
@@ -125,6 +144,7 @@ define(function() {
         matrix: matrix,
         debug: debug,
         yuv2canvas: yuv2canvas,
-        yuv2rgb: yuv2rgb
+        yuv2rgb: yuv2rgb,
+        renderReady: renderReady
     };
 });
